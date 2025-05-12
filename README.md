@@ -2,7 +2,7 @@
 
 [![Bash](https://img.shields.io/badge/Bash-3E7720?logo=gnubash&logoColor=FFF)](#)
 [![Code Size](https://custom-icon-badges.demolab.com/github/languages/code-size/FrostyNick/y2?logo=file-code&logoColor=white)](#)
-[![License](https://custom-icon-badges.herokuapp.com/github/license/FrostyNick/y2?logo=law&color=EA3424&labelColor=191724)](LICENSE)
+[![License](https://custom-icon-badges.herokuapp.com/github/license/FrostyNick/y2?logo=law&color=EA3423&labelColor=191724)](LICENSE)
 
 Automate `yt-dlp` downloading, storing, checking for duplicates and watching videos using `mpv`, `vlc`, or an alternative with concise commands.
 
@@ -31,19 +31,22 @@ You will need the following dependencies installed on your system:
 
 1. Clone the repository:
   ```sh
-  cd ~/projects # wherever you choose to store `y2` git repo, but `ln` as seen later needs to be used again if `y2` is moved.
+  cd ~/projects
   git clone https://github.com/FrostyNick/y2.git
   ```
+
+> [!NOTE]
+> `ln` needs to be used again (as shown later) if `y2` is moved. Pick a place you don't plan to move it out of right away.
 
 2. Make the script executable:
   ```sh
   chmod +x ./y2/y2.sh
   ```
 
-3. Add it to path so it can be run anywhere.
+3. Add it to path so it can be run anywhere. To see where your path(s) are: echo $PATH
   
   ```sh
-  # Check that /usr/local/bin is in $PATH otherwise below will not work (To see where path: echo $PATH)
+  # Check that /usr/local/bin is in $PATH otherwise below will not work.
   sudo ln -s $HOME/projects/y2.sh /usr/local/bin/y2
   # For example, if choosing ~/.local/bin instead if above is not found in $PATH:
   sudo ln -s $HOME/projects/y2.sh $HOME/.local/bin/y2
