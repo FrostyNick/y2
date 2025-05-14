@@ -71,12 +71,12 @@ y2 [options] <media_url>
   y2 https://youtu.be/pVI_smLgTY0
   ```
 
-2. Download a video like above with recommended added options (might only work with `yt-dlp`):
+2. (`yt-dlp` only maybe) Download a video like above with recommended added options and a max video height:
   ```sh
-  y2 0 https://youtu.be/pVI_smLgTY0
+  y2 0 720 https://youtu.be/pVI_smLgTY0
   ```
 
-  The `0` above at the time of writing is replaced with:
+  The `0` above (without second argument) at the time of writing is replaced with:
   `-f bestvideo[height<=1080]+bestaudio/best[height<=1080] --embed-chapters --sponsorblock-mark all --embed-metadata --embed-thumbnail --add-metadata --embed-subs --sub-lang en`
 
 3. Download a video with height no bigger than 500px (this is comparable to quality settings in YouTube video); adding some flags from `yt-dlp` as well:

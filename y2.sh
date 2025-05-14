@@ -102,16 +102,15 @@ if [ $# -eq 0 ] || [ "$1" = "--help" ]; then
   echo "Automate downloading, storing, checking for duplicates (not related to archive.txt if you know about that), getting and watching videos (mpv [recommended], cvlc, vlc, and some other players work) with a single command."
   echo
   # echo "Use this as first argument:"
-  # Below is experimental and may break sometimes.
-  # echo -e "  --cwd      \t Use current working directory instead of $filestore.\n"
+  # echo -e "  --cwd      \t Broken: Use current working directory instead of $filestore.\n"
   echo "Choose one of the following options:"
   echo -e "  -g         \t Get downloaded video(s) with grep and fzf (this doesn't check partial videos in cache). Works with YT videos."
-  echo -e "  0          \t Apply extra flags to $filefetch (made for yt-dlp), which you may or may not like."
-  echo -e "  <int> != 0 \t Set a max video height size"
+  echo -e "  0 <int?>   \t Apply useful extra flags to $filefetch (made for yt-dlp). Optional 2nd argument: Max video height size."
+  echo -e "  <int> != 0 \t Max video height size"
   echo -e "  --max <int>\t Same as above"
   echo
   echo "Every other flag after will be passed to $filefetch."
-  echo -e "Example:   \t y2 0 https://youtu.be/pVI_smLgTY0"
+  echo -e "Example:   \t y2 0 480 https://youtu.be/pVI_smLgTY0"
   echo -e "Example #2:\t y2 -x https://www.youtube.com/watch?v=xsDnEj2Hx4Q"
   echo
   echo "Above downloads audio of the youtube link when filefetch value is set to yt-dlp / youtube-dl."
@@ -124,12 +123,17 @@ if [ $# -eq 0 ] || [ "$1" = "--help" ]; then
   echo
 
 elif [ "$1" = "0" ]; then
-  echy "0 adds these flags to $filefetch:"
-  args=("-f" "bestvideo[height<=1080]+bestaudio/best[height<=1080]" "--embed-chapters" "--sponsorblock-mark" "all" "--embed-metadata" "--embed-thumbnail" "--add-metadata" "--embed-subs" "--sub-lang" "en")
+  if [[ $2 =~ ^[0-9]+$ ]]; then
+    echy "0 $2 adds these flags to $filefetch:"
+    args=("-f" "bestvideo[height<=$2]+bestaudio/best[height<=$2]" "--embed-chapters" "--sponsorblock-mark" "all" "--embed-metadata" "--embed-thumbnail" "--add-metadata" "--embed-subs" "--sub-lang" "en")
+    shift
+  else
+    echy "0 adds these flags to $filefetch:"
+    args=("-f" "bestvideo[height<=1080]+bestaudio/best[height<=1080]" "--embed-chapters" "--sponsorblock-mark" "all" "--embed-metadata" "--embed-thumbnail" "--add-metadata" "--embed-subs" "--sub-lang" "en")
+  fi
   # args=("-f" "bestvideo[height<=1080]+bestaudio/best[height<=1080]" "--embed-chapters" "--sponsorblock-mark" "all" "--embed-metadata" "--embed-thumbnail" "--add-metadata" "--embed-subs" "--sub-lang" "en" "--sponsorblock-remove" "sponsor")
   # Above remove sponsored parts of video.
   # "--sponsorblock-remove" "all,-intro,-outro,-selfpromo,-preview,-interaction,-poi_highlight" # might not work
-
 
   shift
   main "$@"
