@@ -100,7 +100,7 @@ main() {
   (mv "$bname" "$filestore" && cd "$filestore" && echy "Saved in: "$(pwd)"" && view) || exyt;return
 }
 
-if [ $# -eq 0 ] || [ "$1" = "--help" ]; then
+if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   echo "Automate downloading, storing, checking for duplicates (not related to archive.txt if you know about that), getting and watching videos (mpv [recommended], cvlc, vlc, and some other players work) with a single command."
   echo
   # echo "Use this as first argument:"
@@ -116,7 +116,7 @@ if [ $# -eq 0 ] || [ "$1" = "--help" ]; then
   echo -e "Example #2:\t y2 -x https://www.youtube.com/watch?v=xsDnEj2Hx4Q"
   echo
   echo "Above downloads audio of the youtube link when filefetch value is set to yt-dlp / youtube-dl."
-  echo "For $filefetch help, use the $filefetch command instead (probably with --help)."
+  echo "For $filefetch help, use $filefetch with --help."
   echo
   echo "filefetch is set to $filefetch (default: yt-dlp)"
   echo "fileview  is set to $fileview (default: mpv)"
@@ -126,17 +126,19 @@ if [ $# -eq 0 ] || [ "$1" = "--help" ]; then
 
 elif [ "$1" = "0" ]; then
   if [[ $2 =~ ^[0-9]+$ ]]; then
-    echy "0 $2 adds these flags to $filefetch:"
-    argmax="bestvideo[height<=$2]+bestaudio/best[height<=$2]"
+    echy "$1 $2 adds these flags to $filefetch:"
+    argmax="bestvideo[height<=?$2]+bestaudio/best[height<=?$2]"
     shift
   else
-    argmax="bestvideo[height<=1080]+bestaudio/best[height<=1080]"
-    echy "0 adds these flags to $filefetch:"
+    argmax="bestvideo[height<=?1080]+bestaudio/best[height<=?1080]"
+    echy "$1 adds these flags to $filefetch:"
   fi
   if [ "$filefetch" = "youtube-dl" ]; then
     args=("-f" "$argmax" "--add-metadata" "--sub-lang" "en" "--write-sub" "--write-auto-sub" "--embed-subs") # "--embed-thumbnail" saves as a separate file usually, so not included by default.
   else
-    args=("-f" "$argmax" "--embed-chapters" "--sponsorblock-mark" "all" "--embed-metadata" "--embed-thumbnail" "--add-metadata" "--sub-langs" "en" "--write-subs" "--write-auto-subs" "--embed-subs" "--compat-options no-keep-subs")
+    args=("-f" "$argmax" "--embed-chapters" "--sponsorblock-mark" "all" "--embed-metadata" "--embed-thumbnail" "--add-metadata" "--sub-langs" "en" "--write-subs" "--write-auto-subs" "--embed-subs" "--compat-options no-keep-subs" "--extractor-args" "youtube:player_client=default,-web" "--mtime")
+    # --mtime: This is currently the default in yt-dlp, which is planned to change to --no-mtime in a future update.
+    # --extrator-args youtube:pla...: workaround for captions to work on some devices without POT. this can probably be removed in the future.
     # --compat-options is needed for yt-dlp to embed both auto and regular subtitles at the moment: https://github.com/yt-dlp/yt-dlp/issues/630#issuecomment-893659460
     if ! [ "$filefetch" = "yt-dlp" ]; then # yt-dlp forks probably exist
       echy "WARNING: yt-dlp is being used as fallback (filefetch [default: yt-dlp] = $filefetch). If this is wrong, next time remove the 0, change filefetch or create an issue."
@@ -154,9 +156,9 @@ elif [[ $1 =~ ^[0-9]+$ ]]; then
   shift
   main "$@"
 elif [ "$1" = "-g" ]; then
-  bname=$(env ls -1 "$filestore" | grep -i $(echo $2 | sed 's/.*\=//' | sed 's/.*\///' | sed 's/\?.*//') | grep -v ".vtt$\|.srt$\|.lrc$\|.ass$\|" | fzf -1) && (cd "$filestore";view) || echy "No result found."
+  bname=$(env ls -1 "$filestore" | grep -i $(echo $2 | sed 's/.*\=//' | sed 's/.*\///' | sed 's/\?.*//') | grep -v ".vtt$\|.srt$\|.lrc$\|.ass$" | fzf -1) && (cd "$filestore";view) || echy "No result found."
 elif [ "$1" = "--max" ]; then
-  echy "--max adds these flags to $filefetch: "
+  echy "$1 adds these flags to $filefetch: "
   args=("-f" "bestvideo[height<=$2]+bestaudio/best[height<=$2]")
   shift;shift
   main "$@"
